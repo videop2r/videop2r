@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="VideoP2R: Video Understanding from Perception to Reasoning - CVPR Findings 2026">
-  <meta name="keywords" content="VideoP2R, Video Reasoning, Reinforcement Fine-Tuning, LVLM, PA-GRPO, Perception, Reasoning">
+  <meta name="description" content="VIDEOP2R: Video Understanding from Perception to Reasoning - CVPR Findings 2026">
+  <meta name="keywords" content="VIDEOP2R, Video Reasoning, Reinforcement Fine-Tuning, LVLM, PA-GRPO, Perception, Reasoning">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VideoP2R: Video Understanding from Perception to Reasoning</title>
+  <title>VIDEOP2R: Video Understanding from Perception to Reasoning</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./static/css/bulma.min.css">
@@ -570,7 +570,7 @@
   <div class="container is-max-desktop has-text-centered">
     <div class="venue-badge">CVPR Findings 2026</div>
     <h1 class="paper-title">
-      <span class="highlight">VideoP2R</span>
+      <span class="highlight">VIDEOP2R</span>
     </h1>
     <p class="paper-subtitle">Video Understanding from Perception to Reasoning</p>
 
@@ -611,10 +611,10 @@
 <section class="content-section" style="padding-top: 0; background: #FAFBFF;">
   <div class="container is-max-desktop">
     <div class="teaser-card fade-in">
-      <img src="./static/images/videop2r/main_figure_new.png" alt="VideoP2R Main Figure">
+      <img src="./static/images/VIDEOP2R/main_figure_new.png" alt="VIDEOP2R Main Figure">
       <div class="teaser-caption">
-        <strong>Comparison between GRPO-based video RFT framework (process-agnostic) and VideoP2R (process-aware).</strong>
-        VideoP2R models <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes with separate reward signals, enabling more effective credit assignment during reinforcement learning.
+        <strong>Comparison between GRPO-based video RFT framework (process-agnostic) and VIDEOP2R (process-aware).</strong>
+        VIDEOP2R models <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes with separate reward signals, enabling more effective credit assignment during reinforcement learning.
       </div>
     </div>
   </div>
@@ -626,7 +626,7 @@
     <h2 class="section-title fade-in">Abstract</h2>
     <div class="abstract-text fade-in">
       <p>
-        Reinforcement fine-tuning (RFT), a two-stage framework consisting of supervised fine-tuning (SFT) and reinforcement learning (RL) has shown promising results on improving reasoning ability of large language models (LLMs). Yet extending RFT to large video language models (LVLMs) remains challenging. We propose <strong>VideoP2R</strong>, a novel process-aware video RFT framework that enhances video reasoning by modeling perception and reasoning as distinct processes. In the SFT stage, we develop a three-step pipeline to generate <strong>VideoP2R-CoT-162K</strong>, a high-quality, process-aware chain-of-thought (CoT) dataset for perception and reasoning. In the RL stage, we introduce a novel process-aware group relative policy optimization (<strong>PA-GRPO</strong>) algorithm that supplies separate rewards for perception and reasoning. Extensive experiments show that VideoP2R achieves state-of-the-art (SotA) performance on <strong>six out of seven</strong> video reasoning and understanding benchmarks. Ablation studies further confirm the effectiveness of our process-aware modeling and PA-GRPO.
+        Reinforcement fine-tuning (RFT), a two-stage framework consisting of supervised fine-tuning (SFT) and reinforcement learning (RL) has shown promising results on improving reasoning ability of large language models (LLMs). Yet extending RFT to large video language models (LVLMs) remains challenging. We propose <strong>VIDEOP2R</strong>, a novel process-aware video RFT framework that enhances video reasoning by modeling perception and reasoning as distinct processes. In the SFT stage, we develop a three-step pipeline to generate <strong>VIDEOP2R-CoT-162K</strong>, a high-quality, process-aware chain-of-thought (CoT) dataset for perception and reasoning. In the RL stage, we introduce a novel process-aware group relative policy optimization (<strong>PA-GRPO</strong>) algorithm that supplies separate rewards for perception and reasoning. Extensive experiments show that VIDEOP2R achieves state-of-the-art (SotA) performance on <strong>six out of seven</strong> video reasoning and understanding benchmarks. Ablation studies further confirm the effectiveness of our process-aware modeling and PA-GRPO.
       </p>
     </div>
 
@@ -643,7 +643,7 @@
         <div class="highlight-icon" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">
           <i class="fas fa-database"></i>
         </div>
-        <h3>VideoP2R-CoT-162K</h3>
+        <h3>VIDEOP2R-CoT-162K</h3>
         <p>High-quality process-aware chain-of-thought dataset built through a three-step generation pipeline with automatic verification.</p>
       </div>
       <div class="highlight-card">
@@ -668,13 +668,13 @@
 <section class="content-section" id="method" style="background: white;">
   <div class="container is-max-desktop">
     <h2 class="section-title fade-in">Two-Stage RFT Framework</h2>
-    <p class="section-subtitle fade-in">VideoP2R follows the standard RFT setup with a specific focus on modeling video reasoning into <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes.</p>
+    <p class="section-subtitle fade-in">VIDEOP2R follows the standard RFT setup with a specific focus on modeling video reasoning into <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes.</p>
 
     <!-- Overall Framework Figure -->
     <div class="figure-card fade-in">
-      <img src="./static/images/videop2r/data_annotation_fina.png" alt="VideoP2R Framework">
+      <img src="./static/images/VIDEOP2R/data_annotation_fina.png" alt="VIDEOP2R Framework">
       <div class="figure-caption">
-        <strong>Overall Framework.</strong> Illustration of the VideoP2R RFT framework (left) and the three-step CoT generation pipeline (right). The SFT stage constructs process-aware CoT data; the RL stage refines the model with PA-GRPO.
+        <strong>Overall Framework.</strong> Illustration of the VIDEOP2R RFT framework (left) and the three-step CoT generation pipeline (right). The SFT stage constructs process-aware CoT data; the RL stage refines the model with PA-GRPO.
       </div>
     </div>
 
@@ -707,7 +707,7 @@
       </div>
 
       <p class="fade-in" style="color: #555; margin-top: 1.5rem; max-width: 900px; line-height: 1.7; text-align: center; margin-left: auto; margin-right: auto;">
-        Applying the pipeline on 260K VQA data produces <strong>VideoP2R-CoT-162K</strong> &mdash; 162K high-quality process-aware CoT samples with perception and reasoning traces for SFT warm-up.
+        Applying the pipeline on 260K VQA data produces <strong>VIDEOP2R-CoT-162K</strong> &mdash; 162K high-quality process-aware CoT samples with perception and reasoning traces for SFT warm-up.
       </p>
     </div>
 
@@ -722,7 +722,7 @@
       </p>
 
       <div class="figure-card fade-in" style="max-width: 700px; margin-left: auto; margin-right: auto;">
-        <img src="./static/images/videop2r/PA-GRPO.png" alt="PA-GRPO Algorithm">
+        <img src="./static/images/VIDEOP2R/PA-GRPO.png" alt="PA-GRPO Algorithm">
         <div class="figure-caption">
           <strong>PA-GRPO Algorithm.</strong> Each sampled response is split into perception tokens (<span class="tag-perception">o<sub>P</sub></span>) and reasoning tokens (<span class="tag-reasoning">o<sub>R</sub></span>). Separate accuracy, format, and length rewards are computed for each process, then normalized within their respective groups to yield process-aware advantages.
         </div>
@@ -816,7 +816,7 @@
             <td>62.1</td><td>73.7</td><td class="second">59.8</td><td class="second">57.4</td>
           </tr>
           <tr class="ours-row">
-            <td>VideoP2R (Ours)</td>
+            <td>VIDEOP2R (Ours)</td>
             <td class="best">36.8</td><td class="best">55.0</td><td class="second">65.4</td><td class="best">51.0</td>
             <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td><td class="best">58.7</td>
           </tr>
@@ -854,7 +854,7 @@
         <tbody>
           <tr class="ablation-header"><td colspan="9"><em>Two-stage Training</em></td></tr>
           <tr class="ours-row">
-            <td>VideoP2R (Ours)</td>
+            <td>VIDEOP2R (Ours)</td>
             <td>36.8</td><td class="best">55.0</td><td class="best">65.4</td><td class="best">51.0</td>
             <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td>
             <td class="best">58.7 <span style="color:#16a34a; font-size:0.75em;">+5.8</span></td>
@@ -874,7 +874,7 @@
 
           <tr class="ablation-header"><td colspan="9"><em>Process-aware Modeling</em></td></tr>
           <tr class="ours-row">
-            <td>VideoP2R (Ours)</td>
+            <td>VIDEOP2R (Ours)</td>
             <td>36.8</td><td class="best">55.0</td><td class="best">65.4</td><td class="best">51.0</td>
             <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td>
             <td class="best">58.7 <span style="color:#16a34a; font-size:0.75em;">+5.8</span></td>
@@ -894,7 +894,7 @@
 
           <tr class="ablation-header"><td colspan="9"><em>Reward Design</em></td></tr>
           <tr class="ours-row">
-            <td>VideoP2R (Ours)</td>
+            <td>VIDEOP2R (Ours)</td>
             <td>36.8</td><td class="best">55.0</td><td class="best">65.4</td><td class="best">51.0</td>
             <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td>
             <td class="best">58.7 <span style="color:#16a34a; font-size:0.75em;">+5.8</span></td>
@@ -944,15 +944,15 @@
     <div class="two-col fade-in">
       <!-- Perception Effectiveness -->
       <div class="figure-card">
-        <img src="./static/images/videop2r/videop2r_obs_ablation_color.png" alt="Effect of Perception">
+        <img src="./static/images/VIDEOP2R/VIDEOP2R_obs_ablation_color.png" alt="Effect of Perception">
         <div class="figure-caption">
-          <strong>Effect of perception on downstream reasoning.</strong> VideoP2R's perception output alone (text-only, 55.5%) surpasses raw video input (52.9%), demonstrating that its perceptions capture semantically rich information for reasoning.
+          <strong>Effect of perception on downstream reasoning.</strong> VIDEOP2R's perception output alone (text-only, 55.5%) surpasses raw video input (52.9%), demonstrating that its perceptions capture semantically rich information for reasoning.
         </div>
       </div>
 
       <!-- Reward Analysis -->
       <div class="figure-card">
-        <img src="./static/images/videop2r/Reward_Analysis_new.png" alt="Reward Analysis">
+        <img src="./static/images/VIDEOP2R/Reward_Analysis_new.png" alt="Reward Analysis">
         <div class="figure-caption">
           <strong>Training dynamics & think-answer mismatch analysis.</strong> PA-GRPO exhibits fewer advantage collapse samples and significantly lower think-answer mismatch rates compared to standard GRPO.
         </div>
@@ -961,9 +961,9 @@
 
     <!-- Case Study -->
     <div class="figure-card fade-in" style="margin-top: 2rem;">
-      <img src="./static/images/videop2r/case_study_new.png" alt="Case Study">
+      <img src="./static/images/VIDEOP2R/case_study_new.png" alt="Case Study">
       <div class="figure-caption">
-        <strong>Qualitative results.</strong> Left: A success case showing an <em>Aha Moment</em> where VideoP2R performs process-aware inference by accurately describing visual cues and reasoning over them. Right: A failure case where the model identifies correct visual details but lacks domain-specific knowledge (molar volume = 22.4).
+        <strong>Qualitative results.</strong> Left: A success case showing an <em>Aha Moment</em> where VIDEOP2R performs process-aware inference by accurately describing visual cues and reasoning over them. Right: A failure case where the model identifies correct visual details but lacks domain-specific knowledge (molar volume = 22.4).
       </div>
     </div>
   </div>
