@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="VideoP2R: Video Understanding from Perception to Reasoning - CVPR 2026">
+  <meta name="keywords" content="VideoP2R, Video Reasoning, Reinforcement Fine-Tuning, LVLM, PA-GRPO, Perception, Reasoning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VideoP2R: Video Understanding from Perception to Reasoning</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+
+  <style>
+    :root {
+      --perception-color: #3B82F6;
+      --reasoning-color: #F59E0B;
+      --perception-bg: rgba(59,130,246,0.08);
+      --reasoning-bg: rgba(245,158,11,0.08);
+      --accent: #6366F1;
+      --gradient-start: #6366F1;
+      --gradient-end: #3B82F6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans', sans-serif;
+      background: #FAFBFF;
+      color: #1a1a2e;
+    }
+
+    /* Hero Section */
+    .hero-banner {
+      background: linear-gradient(135deg, #0f0c29 0%, #1a1a4e 40%, #24243e 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 5rem 1.5rem 4rem;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.15) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 50%, rgba(59,130,246,0.1) 0%, transparent 60%);
+      animation: float 20s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(2%, -1%) rotate(1deg); }
+      66% { transform: translate(-1%, 1%) rotate(-1deg); }
+    }
+
+    .hero-banner .container { position: relative; z-index: 1; }
+
+    .venue-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+    }
+
+    .paper-title {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .paper-title .highlight {
+      background: linear-gradient(135deg, #818CF8, #60A5FA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .paper-subtitle {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+
+    .author-list {
+      margin-bottom: 1rem;
+    }
+    .author-list, .author-list span, .author-list sup {
+      color: rgba(255,255,255,0.9);
+    }
+    .author-list a {
+      color: rgba(255,255,255,0.9) !important;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .author-list a:hover {
+      color: #818CF8 !important;
+      text-decoration: underline;
+    }
+    .author-list .author-sep {
+      color: rgba(255,255,255,0.4);
+      margin: 0 0.15rem;
+    }
+    .author-list sup {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.7em;
+    }
+
+    .affiliation-list {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+    .affiliation-list sup { font-size: 0.75em; }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none !important;
+      transition: all 0.3s ease;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: white !important;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+    }
+    .hero-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    .hero-btn i { font-size: 1.1em; }
+
+    /* Section Styles */
+    .content-section {
+      padding: 4rem 1.5rem;
+    }
+    .content-section:nth-child(even) {
+      background: white;
+    }
+
+    .section-title {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      color: #1a1a2e;
+    }
+    .section-subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.05rem;
+      margin-bottom: 2.5rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Teaser */
+    .teaser-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin: -3rem auto 0;
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+    }
+    .teaser-card img {
+      width: 100%;
+      display: block;
+    }
+    .teaser-caption {
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, var(--perception-bg), var(--reasoning-bg));
+      border-top: 1px solid rgba(0,0,0,0.05);
+      font-size: 0.95rem;
+      color: #444;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    /* Process Tags */
+    .tag-perception {
+      display: inline-block;
+      background: var(--perception-bg);
+      color: var(--perception-color);
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      font-weight: 500;
+      border: 1px solid rgba(59,130,246,0.2);
+    }
+    .tag-reasoning {
+      display: inline-block;
+      background: var(--reasoning-bg);
+      color: #D97706;
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      font-weight: 500;
+      border: 1px solid rgba(245,158,11,0.2);
+    }
+
+    /* Abstract */
+    .abstract-text {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: justify;
+    }
+
+    /* Highlights */
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 2.5rem auto 0;
+    }
+    .highlight-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.8rem;
+      border: 1px solid #e8eaf0;
+      transition: all 0.3s ease;
+    }
+    .highlight-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+      border-color: transparent;
+    }
+    .highlight-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: white;
+    }
+    .highlight-card h3 {
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .highlight-card p {
+      font-size: 0.92rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Figure Cards */
+    .figure-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      border: 1px solid #eee;
+      transition: box-shadow 0.3s ease;
+    }
+    .figure-card:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    }
+    .figure-card img {
+      width: 100%;
+      display: block;
+    }
+    .figure-card .figure-caption {
+      padding: 1.2rem 1.5rem;
+      font-size: 0.92rem;
+      color: #555;
+      line-height: 1.6;
+      border-top: 1px solid #f0f0f0;
+    }
+    .figure-card .figure-caption strong {
+      color: #333;
+    }
+
+    /* Results Table */
+    .results-table-wrapper {
+      overflow-x: auto;
+      margin: 0 auto;
+      max-width: 1100px;
+    }
+    .results-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.9rem;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+    .results-table thead th {
+      background: #1a1a2e;
+      color: white;
+      padding: 0.9rem 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    .results-table thead th:first-child {
+      text-align: left;
+      padding-left: 1.2rem;
+    }
+    .results-table thead .subheader th {
+      background: #2d2d52;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.5rem 0.8rem;
+    }
+    .results-table tbody td {
+      padding: 0.7rem 0.8rem;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f5;
+      white-space: nowrap;
+    }
+    .results-table tbody td:first-child {
+      text-align: left;
+      padding-left: 1.2rem;
+      font-weight: 500;
+    }
+    .results-table .category-row td {
+      background: #F8F9FB;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #666;
+      padding: 0.5rem 0.8rem 0.5rem 1.2rem;
+      letter-spacing: 0.03em;
+    }
+    .results-table .ours-row td {
+      background: linear-gradient(90deg, rgba(99,102,241,0.06), rgba(59,130,246,0.06));
+      font-weight: 600;
+    }
+    .results-table .ours-row td:first-child {
+      color: var(--accent);
+    }
+    .results-table .best {
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .results-table .second {
+      text-decoration: underline;
+    }
+
+    /* Two Column Layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; }
+      .paper-title { font-size: 2rem; }
+      .paper-subtitle { font-size: 1.1rem; }
+    }
+
+    /* BibTeX */
+    .bibtex-box {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .bibtex-box pre {
+      color: #a5b4fc;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin: 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .bibtex-copy {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.8rem;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: rgba(255,255,255,0.6);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .bibtex-copy:hover {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    /* Footer */
+    .site-footer {
+      background: #1a1a2e;
+      color: rgba(255,255,255,0.5);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+    .site-footer a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+    }
+    .site-footer a:hover { color: white; }
+
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+
+    /* Animated entrance */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Pipeline steps */
+    .pipeline-steps {
+      display: flex;
+      gap: 1rem;
+      max-width: 1100px;
+      margin: 2rem auto 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pipeline-step {
+      flex: 1;
+      min-width: 220px;
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border-left: 4px solid var(--accent);
+      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    }
+    .pipeline-step .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+    .pipeline-step h4 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .pipeline-step p {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Nav */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(15,12,41,0.85);
+      backdrop-filter: blur(12px);
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      transition: all 0.3s;
+    }
+    .site-nav.scrolled {
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .site-nav a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .site-nav a:hover { color: white; }
+
+    .container.is-max-desktop { max-width: 1100px; }
+
+    /* Ablation table adjustments */
+    .results-table .ablation-header td {
+      background: #f0f0f5;
+      font-weight: 600;
+      font-size: 0.82rem;
+      font-style: italic;
+      color: #555;
+      padding: 0.45rem 0.8rem 0.45rem 1.2rem;
+    }
+
+    .stat-number {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="site-nav" id="navbar">
+  <a href="#abstract">Abstract</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#analysis">Analysis</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero-banner" style="padding-top: 6rem;">
+  <div class="container is-max-desktop has-text-centered">
+    <div class="venue-badge">CVPR 2026</div>
+    <h1 class="paper-title">
+      <span class="highlight">VideoP2R</span>
+    </h1>
+    <p class="paper-subtitle">Video Understanding from Perception to Reasoning</p>
+
+    <div class="author-list is-size-5">
+      <a href="https://scholar.google.com/citations?user=npRM7lYAAAAJ&hl=en&authuser=1">Yifan Jiang</a><sup>1*</sup><span class="author-sep">,</span>
+      Yueying Wang<sup>2</sup><span class="author-sep">,</span>
+      Rui Zhao<sup>2&dagger;</sup><span class="author-sep">,</span>
+      Toufiq Parag<sup>3*</sup><span class="author-sep">,</span>
+      Zhimin Chen<sup>2</sup><span class="author-sep">,</span>
+      <br>
+      Zhenyu Liao<sup>2</sup><span class="author-sep">,</span>
+      Jayakrishnan Unnikrishnan<sup>2</sup>
+    </div>
+
+    <div class="affiliation-list">
+      <sup>1</sup>USC &nbsp;&nbsp; <sup>2</sup>Amazon &nbsp;&nbsp; <sup>3</sup>Keystone AI<br>
+      <span style="font-size: 0.8rem;"><sup>*</sup>Work done while at Amazon &nbsp; <sup>&dagger;</sup>Corresponding author</span>
+    </div>
+
+    <div class="hero-buttons">
+      <a class="hero-btn" href="https://arxiv.org/pdf/2511.11113">
+        <i class="fas fa-file-pdf"></i> Paper
+      </a>
+      <a class="hero-btn" href="https://arxiv.org/abs/2511.11113">
+        <i class="ai ai-arxiv"></i> arXiv
+      </a>
+      <a class="hero-btn" style="opacity: 0.6; cursor: default; pointer-events: none;">
+        <i class="fab fa-github"></i> Code (Coming Soon)
+      </a>
+      <a class="hero-btn" style="opacity: 0.6; cursor: default; pointer-events: none;">
+        <i class="far fa-images"></i> Dataset (Coming Soon)
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser Figure -->
+<section class="content-section" style="padding-top: 0; background: #FAFBFF;">
+  <div class="container is-max-desktop">
+    <div class="teaser-card fade-in">
+      <img src="./static/images/videop2r/main_figure_new.png" alt="VideoP2R Main Figure">
+      <div class="teaser-caption">
+        <strong>Comparison between GRPO-based video RFT framework (process-agnostic) and VideoP2R (process-aware).</strong>
+        VideoP2R models <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes with separate reward signals, enabling more effective credit assignment during reinforcement learning.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract -->
+<section class="content-section" id="abstract">
+  <div class="container is-max-desktop">
+    <h2 class="section-title fade-in">Abstract</h2>
+    <div class="abstract-text fade-in">
+      <p>
+        Reinforcement fine-tuning (RFT), a two-stage framework consisting of supervised fine-tuning (SFT) and reinforcement learning (RL) has shown promising results on improving reasoning ability of large language models (LLMs). Yet extending RFT to large video language models (LVLMs) remains challenging. We propose <strong>VideoP2R</strong>, a novel process-aware video RFT framework that enhances video reasoning by modeling perception and reasoning as distinct processes. In the SFT stage, we develop a three-step pipeline to generate <strong>VideoP2R-CoT-162K</strong>, a high-quality, process-aware chain-of-thought (CoT) dataset for perception and reasoning. In the RL stage, we introduce a novel process-aware group relative policy optimization (<strong>PA-GRPO</strong>) algorithm that supplies separate rewards for perception and reasoning. Extensive experiments show that VideoP2R achieves state-of-the-art (SotA) performance on <strong>six out of seven</strong> video reasoning and understanding benchmarks. Ablation studies further confirm the effectiveness of our process-aware modeling and PA-GRPO.
+      </p>
+    </div>
+
+    <!-- Key Highlights -->
+    <div class="highlights-grid fade-in">
+      <div class="highlight-card">
+        <div class="highlight-icon" style="background: linear-gradient(135deg, #6366F1, #818CF8);">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h3>Process-Aware Framework</h3>
+        <p>Models <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes with separate supervision signals.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">
+          <i class="fas fa-database"></i>
+        </div>
+        <h3>VideoP2R-CoT-162K</h3>
+        <p>High-quality process-aware chain-of-thought dataset built through a three-step generation pipeline with automatic verification.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>PA-GRPO</h3>
+        <p>Process-aware RL algorithm providing separate perception and reasoning rewards for fine-grained credit assignment.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon" style="background: linear-gradient(135deg, #10B981, #34D399);">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h3>SotA on 6/7 Benchmarks</h3>
+        <p>Consistent 1.9%&ndash;9.1% accuracy gains over base models across seven diverse video benchmarks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method: Two-Stage RFT Framework -->
+<section class="content-section" id="method" style="background: white;">
+  <div class="container is-max-desktop">
+    <h2 class="section-title fade-in">Two-Stage RFT Framework</h2>
+    <p class="section-subtitle fade-in">VideoP2R follows the standard RFT setup with a specific focus on modeling video reasoning into <span class="tag-perception">perception</span> and <span class="tag-reasoning">reasoning</span> as distinct processes.</p>
+
+    <!-- Overall Framework Figure -->
+    <div class="figure-card fade-in">
+      <img src="./static/images/videop2r/data_annotation_fina.png" alt="VideoP2R Framework">
+      <div class="figure-caption">
+        <strong>Overall Framework.</strong> Illustration of the VideoP2R RFT framework (left) and the three-step CoT generation pipeline (right). The SFT stage constructs process-aware CoT data; the RL stage refines the model with PA-GRPO.
+      </div>
+    </div>
+
+    <!-- Stage 1: SFT -->
+    <div style="margin-top: 3rem;">
+      <h3 class="fade-in" style="font-family: 'Google Sans', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--perception-color); color: white; font-size: 0.9rem; margin-right: 0.6rem;">1</span>
+        SFT Stage: Process-Aware CoT Annotation Pipeline
+      </h3>
+      <p class="fade-in" style="color: #555; margin-bottom: 1.5rem; max-width: 900px; line-height: 1.7;">
+        To address the lack of process-aware CoT data, we design a process-aware CoT template that explicitly disentangles perception from reasoning: <span class="tag-perception">&lt;observation&gt;...&lt;/observation&gt;</span> for extracting visual evidence, and <span class="tag-reasoning">&lt;think&gt;...&lt;/think&gt;&lt;answer&gt;...&lt;/answer&gt;</span> for reasoning and final answer. We then build a three-step pipeline to generate high-quality annotations at scale.
+      </p>
+
+      <div class="pipeline-steps fade-in">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <h4>Process-Aware CoT Generation</h4>
+          <p>For each VQA sample, Qwen2.5-VL-72B-Instruct generates an initial CoT trace with explicit <span class="tag-perception">&lt;observation&gt;</span> and <span class="tag-reasoning">&lt;think&gt;&lt;answer&gt;</span> segments following our process-aware template.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <h4>CoT Verification</h4>
+          <p>We evaluate each generated response with task-specific metrics (exact match, word error rate, ROUGE), discarding samples with low-quality answers or template deviations.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <h4>Observation Sufficiency Verification</h4>
+          <p>Claude 3.7 Sonnet validates the <span class="tag-perception">&lt;observation&gt;</span> in a text-only setting, assessing whether the visual evidence is sufficient to support the correct answer without the raw video.</p>
+        </div>
+      </div>
+
+      <p class="fade-in" style="color: #555; margin-top: 1.5rem; max-width: 900px; line-height: 1.7; text-align: center; margin-left: auto; margin-right: auto;">
+        Applying the pipeline on 260K VQA data produces <strong>VideoP2R-CoT-162K</strong> &mdash; 162K high-quality process-aware CoT samples with perception and reasoning traces for SFT warm-up.
+      </p>
+    </div>
+
+    <!-- Stage 2: RL -->
+    <div style="margin-top: 3.5rem;">
+      <h3 class="fade-in" style="font-family: 'Google Sans', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--reasoning-color); color: white; font-size: 0.9rem; margin-right: 0.6rem;">2</span>
+        RL Stage: Process-Aware Group Relative Policy Optimization (PA-GRPO)
+      </h3>
+      <p class="fade-in" style="color: #555; margin-bottom: 1.5rem; max-width: 900px; line-height: 1.7;">
+        Standard GRPO assigns a single scalar reward to the entire trajectory, blurring credit assignment between perception and reasoning. PA-GRPO provides <strong>separate rewards</strong> for each process and normalizes them independently, enabling fine-grained credit assignment during RL.
+      </p>
+
+      <div class="figure-card fade-in" style="max-width: 700px; margin-left: auto; margin-right: auto;">
+        <img src="./static/images/videop2r/PA-GRPO.png" alt="PA-GRPO Algorithm">
+        <div class="figure-caption">
+          <strong>PA-GRPO Algorithm.</strong> Each sampled response is split into perception tokens (<span class="tag-perception">o<sub>P</sub></span>) and reasoning tokens (<span class="tag-reasoning">o<sub>R</sub></span>). Separate accuracy, format, and length rewards are computed for each process, then normalized within their respective groups to yield process-aware advantages.
+        </div>
+      </div>
+
+      <!-- Reward details -->
+      <div class="pipeline-steps fade-in" style="margin-top: 1.5rem;">
+        <div class="pipeline-step" style="border-left-color: var(--perception-color);">
+          <h4 style="color: var(--perception-color);">Perception Reward (R<sub>acc,P</sub>)</h4>
+          <p>LLM-as-Judge evaluation: Claude 3.7 Sonnet assesses whether the <span class="tag-perception">&lt;observation&gt;</span> segment contains sufficient visual evidence to support the correct answer in a text-only setting.</p>
+        </div>
+        <div class="pipeline-step" style="border-left-color: var(--reasoning-color);">
+          <h4 style="color: #D97706;">Reasoning Reward (R<sub>acc,R</sub>)</h4>
+          <p>Task-specific rule-based evaluation: exact word match for categorical tasks, ROUGE-based similarity for open-ended QA, and error-based scores for numerical problems.</p>
+        </div>
+        <div class="pipeline-step" style="border-left-color: #10B981;">
+          <h4 style="color: #10B981;">Format & Length Rewards</h4>
+          <p>Separate format rewards enforce template adherence for each process. Length rewards favor concise yet informative outputs within target ranges (128&ndash;320 tokens for perception, 320&ndash;512 for reasoning).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Results -->
+<section class="content-section" id="results">
+  <div class="container is-max-desktop">
+    <h2 class="section-title fade-in">Main Results</h2>
+    <p class="section-subtitle fade-in">SotA performance on 6 out of 7 video reasoning and understanding benchmarks</p>
+
+    <div class="results-table-wrapper fade-in">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th rowspan="2" style="min-width: 180px;">Model</th>
+            <th colspan="4" style="border-bottom: 1px solid rgba(255,255,255,0.2);">Video Reasoning</th>
+            <th colspan="3" style="border-bottom: 1px solid rgba(255,255,255,0.2);">Video Understanding</th>
+            <th rowspan="2">Avg</th>
+          </tr>
+          <tr class="subheader">
+            <th>VSI.</th>
+            <th>VideoMMMU</th>
+            <th>MMVU</th>
+            <th>VCR.</th>
+            <th>MV.</th>
+            <th>TempCom.</th>
+            <th>VideoMME</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="category-row"><td colspan="9">Open-Source 7B Models</td></tr>
+          <tr>
+            <td>LLaVA-OneVision-7B</td>
+            <td>32.4</td><td>33.8</td><td>49.2</td><td>&mdash;</td>
+            <td>56.7</td><td>&mdash;</td><td>58.2</td><td>&mdash;</td>
+          </tr>
+          <tr>
+            <td>LongVA-7B</td>
+            <td>29.2</td><td>23.9</td><td>&mdash;</td><td>&mdash;</td>
+            <td>&mdash;</td><td>56.9</td><td>52.6</td><td>&mdash;</td>
+          </tr>
+          <tr>
+            <td>Qwen2.5-VL-7B</td>
+            <td>30.1</td><td>48.1</td><td>60.0</td><td>44.3</td>
+            <td>59.0</td><td>72.6</td><td>56.6</td><td>52.9</td>
+          </tr>
+          <tr class="category-row"><td colspan="9">RFT on Qwen2.5-VL-7B</td></tr>
+          <tr>
+            <td>Video-R1</td>
+            <td class="second">35.8</td><td>52.3</td><td>63.8</td><td>49.0</td>
+            <td>63.9</td><td>73.2</td><td>59.3</td><td>56.8</td>
+          </tr>
+          <tr>
+            <td>VideoChat-R1</td>
+            <td>33.9</td><td class="second">54.0</td><td>63.0</td><td>49.0</td>
+            <td class="second">67.9</td><td>72.5</td><td>57.7</td><td>56.9</td>
+          </tr>
+          <tr>
+            <td>Time-R1</td>
+            <td>29.0</td><td>51.0</td><td>62.9</td><td>49.6</td>
+            <td>63.1</td><td>73.7</td><td>59.3</td><td>55.5</td>
+          </tr>
+          <tr>
+            <td>VersaVid-R1</td>
+            <td>33.7</td><td>51.9</td><td>64.3</td><td class="second">49.8</td>
+            <td>62.9</td><td class="second">74.0</td><td>58.8</td><td>56.5</td>
+          </tr>
+          <tr>
+            <td>VideoRFT</td>
+            <td class="best">36.8</td><td>51.1</td><td class="best">68.5</td><td>49.6</td>
+            <td>62.1</td><td>73.7</td><td class="second">59.8</td><td class="second">57.4</td>
+          </tr>
+          <tr class="ours-row">
+            <td>VideoP2R (Ours)</td>
+            <td class="best">36.8</td><td class="best">55.0</td><td class="second">65.4</td><td class="best">51.0</td>
+            <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td><td class="best">58.7</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #888;">
+      Best result in <span style="color: var(--accent); font-weight: 700;">bold purple</span>, second best <span style="text-decoration: underline;">underlined</span>. All numbers in %.
+    </p>
+
+  </div>
+</section>
+
+<!-- Ablation Study -->
+<section class="content-section" style="background: white;">
+  <div class="container is-max-desktop">
+    <h2 class="section-title fade-in">Ablation Study</h2>
+    <p class="section-subtitle fade-in">Validating the contribution of each process-aware component</p>
+
+    <div class="results-table-wrapper fade-in">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th rowspan="2" style="min-width: 230px;">Model Variant</th>
+            <th colspan="4" style="border-bottom: 1px solid rgba(255,255,255,0.2);">Video Reasoning</th>
+            <th colspan="3" style="border-bottom: 1px solid rgba(255,255,255,0.2);">Video Understanding</th>
+            <th rowspan="2">Avg</th>
+          </tr>
+          <tr class="subheader">
+            <th>VSI.</th><th>VideoMMMU</th><th>MMVU</th><th>VCR.</th>
+            <th>MV.</th><th>TempCom.</th><th>VideoMME</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ablation-header"><td colspan="9"><em>Two-stage Training</em></td></tr>
+          <tr class="ours-row">
+            <td>VideoP2R (Ours)</td>
+            <td>36.8</td><td class="best">55.0</td><td class="best">65.4</td><td class="best">51.0</td>
+            <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td>
+            <td class="best">58.7 <span style="color:#16a34a; font-size:0.75em;">+5.8</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- SFT-only</td>
+            <td>35.2</td><td>53.7</td><td>61.6</td><td>46.9</td>
+            <td>62.3</td><td>72.4</td><td>57.2</td>
+            <td>55.6 <span style="color:#16a34a; font-size:0.75em;">+2.7</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- RL-only</td>
+            <td>35.8</td><td>54.6</td><td>64.6</td><td>46.3</td>
+            <td>60.8</td><td>73.8</td><td>55.9</td>
+            <td>56.0 <span style="color:#16a34a; font-size:0.75em;">+3.1</span></td>
+          </tr>
+
+          <tr class="ablation-header"><td colspan="9"><em>Process-aware Modeling</em></td></tr>
+          <tr class="ours-row">
+            <td>VideoP2R (Ours)</td>
+            <td>36.8</td><td class="best">55.0</td><td class="best">65.4</td><td class="best">51.0</td>
+            <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td>
+            <td class="best">58.7 <span style="color:#16a34a; font-size:0.75em;">+5.8</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- process-agnostic RL (GRPO)</td>
+            <td>37.4</td><td>53.6</td><td>62.8</td><td>48.3</td>
+            <td>63.8</td><td>73.3</td><td>55.4</td>
+            <td>56.4 <span style="color:#16a34a; font-size:0.75em;">+3.5</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- process-agnostic SFT (no RL)</td>
+            <td>34.3</td><td>48.9</td><td>61.6</td><td>47.3</td>
+            <td>59.0</td><td>69.7</td><td>54.0</td>
+            <td>53.5 <span style="color:#16a34a; font-size:0.75em;">+0.6</span></td>
+          </tr>
+
+          <tr class="ablation-header"><td colspan="9"><em>Reward Design</em></td></tr>
+          <tr class="ours-row">
+            <td>VideoP2R (Ours)</td>
+            <td>36.8</td><td class="best">55.0</td><td class="best">65.4</td><td class="best">51.0</td>
+            <td class="best">68.1</td><td class="best">74.5</td><td class="best">60.0</td>
+            <td class="best">58.7 <span style="color:#16a34a; font-size:0.75em;">+5.8</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- without R<sub>R</sub></td>
+            <td>36.0</td><td>51.6</td><td>60.3</td><td>46.8</td>
+            <td>62.1</td><td>72.5</td><td>57.9</td>
+            <td>55.3 <span style="color:#16a34a; font-size:0.75em;">+2.4</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- without R<sub>P</sub></td>
+            <td>37.4</td><td>53.6</td><td>62.8</td><td>48.3</td>
+            <td>63.8</td><td>73.3</td><td>55.4</td>
+            <td>56.4 <span style="color:#16a34a; font-size:0.75em;">+3.5</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- without R<sub>L</sub></td>
+            <td>40.0</td><td>52.7</td><td>63.2</td><td>48.4</td>
+            <td>65.5</td><td>73.9</td><td>60.0</td>
+            <td>57.7 <span style="color:#16a34a; font-size:0.75em;">+4.8</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;- without separation</td>
+            <td>37.1</td><td>53.2</td><td>64.9</td><td>48.8</td>
+            <td>65.0</td><td>73.2</td><td>59.7</td>
+            <td>57.4 <span style="color:#16a34a; font-size:0.75em;">+4.5</span></td>
+          </tr>
+
+          <tr style="border-top: 2px solid #ddd;">
+            <td>Baseline: Qwen2.5-VL-7B</td>
+            <td>30.1</td><td>48.1</td><td>60.0</td><td>44.3</td>
+            <td>59.0</td><td>72.6</td><td>56.6</td><td>52.9</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- In-depth Analysis -->
+<section class="content-section" id="analysis">
+  <div class="container is-max-desktop">
+    <h2 class="section-title fade-in">Analysis</h2>
+    <p class="section-subtitle fade-in">Understanding why process-aware modeling works</p>
+
+    <div class="two-col fade-in">
+      <!-- Perception Effectiveness -->
+      <div class="figure-card">
+        <img src="./static/images/videop2r/videop2r_obs_ablation_color.png" alt="Effect of Perception">
+        <div class="figure-caption">
+          <strong>Effect of perception on downstream reasoning.</strong> VideoP2R's perception output alone (text-only, 55.5%) surpasses raw video input (52.9%), demonstrating that its perceptions capture semantically rich information for reasoning.
+        </div>
+      </div>
+
+      <!-- Reward Analysis -->
+      <div class="figure-card">
+        <img src="./static/images/videop2r/Reward_Analysis_new.png" alt="Reward Analysis">
+        <div class="figure-caption">
+          <strong>Training dynamics & think-answer mismatch analysis.</strong> PA-GRPO exhibits fewer advantage collapse samples and significantly lower think-answer mismatch rates compared to standard GRPO.
+        </div>
+      </div>
+    </div>
+
+    <!-- Case Study -->
+    <div class="figure-card fade-in" style="margin-top: 2rem;">
+      <img src="./static/images/videop2r/case_study_new.png" alt="Case Study">
+      <div class="figure-caption">
+        <strong>Qualitative results.</strong> Left: A success case showing an <em>Aha Moment</em> where VideoP2R performs process-aware inference by accurately describing visual cues and reasoning over them. Right: A failure case where the model identifies correct visual details but lacks domain-specific knowledge (molar volume = 22.4).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>
+    Template adapted from <a href="https://nerfies.github.io">Nerfies</a>.
+    Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+  </p>
+</footer>
+
+<script>
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+</script>
+
+</body>
+</html>
